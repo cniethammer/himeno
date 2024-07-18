@@ -65,24 +65,24 @@ module others
 end module others
 !
 module comm
+  use mpi_f08
   implicit none
   integer,parameter :: ndims=3
   integer :: ndx,ndy,ndz
   integer :: iop(3)
   integer :: npx(2),npy(2),npz(2)
   integer :: npe,id
-  integer :: ijvec,jkvec,ikvec
-  integer :: mpi_comm_cart
+  type(MPI_Datatype) :: ijvec,jkvec,ikvec
+  type(MPI_Comm) :: mpi_comm_cart
 end module comm
 !
 program HimenoBMTxp_f90_MPI
 !
   use others
+  use mpi_f08
   use comm
 !
   implicit none
-!
-  include 'mpif.h'
 !
 !     ttarget specifys the measuring period in sec
   integer :: mx,my,mz
@@ -187,11 +187,10 @@ end program HimenoBMTxp_f90_MPI
 !
 subroutine readparam
 !
+  use mpi_f08
   use comm
 !
   implicit none
-!
-  include 'mpif.h'
 !
   integer :: itmp(3),ierr
   character(10) :: size
@@ -360,12 +359,11 @@ subroutine jacobi(nn,gosa)
   use mtrx
   use bound
   use work
+  use mpi_f08
   use comm
   use others
 !
   implicit none
-!
-  include 'mpif.h'
 !
   integer,intent(in) :: nn
   real(4),intent(inout) :: gosa
@@ -419,13 +417,13 @@ end subroutine jacobi
 !
 subroutine initcomm
 !
+  use mpi_f08
   use comm
 !
   implicit none
 !
-  include 'mpif.h'
-!
-  integer :: ierr,icomm,idm(3)
+  integer :: ierr,idm(3)
+  type(MPI_Comm) :: icomm
   logical :: ipd(3),ir
 !
   call mpi_init(ierr)
@@ -502,11 +500,10 @@ end subroutine initcomm
 !
 subroutine initmax(mx,my,mz,ks)
   use others
+  use mpi_f08
   use comm
 !
   implicit none
-!
-  include 'mpif.h'
 !
   integer,intent(in) :: mx,my,mz
   integer,intent(out) :: ks
@@ -642,13 +639,13 @@ subroutine sendp3()
 !
   use pres
   use others
+  use mpi_f08
   use comm
 !
   implicit none
 !
-  include 'mpif.h'
-!
-  integer :: ist(mpi_status_size,0:3),ireq(0:3)=(/-1,-1,-1,-1/)
+  type(MPI_status)  :: ist(0:3)
+  type(MPI_Request) :: ireq(0:3)
   integer :: ierr
 !
   call mpi_irecv(p(1,1,kmax), &
@@ -701,13 +698,13 @@ subroutine sendp2()
 !
   use pres
   use others
+  use mpi_f08
   use comm
 !
   implicit none
 !
-  include 'mpif.h'
-!
-  integer :: ist(mpi_status_size,0:3),ireq(0:3)=(/-1,-1,-1,-1/)
+  type(MPI_Status)  :: ist(0:3)
+  type(MPI_Request) :: ireq(0:3)
   integer :: ierr
 !
   call mpi_irecv(p(1,1,1), &
@@ -760,13 +757,13 @@ subroutine sendp1()
 !
   use pres
   use others
+  use mpi_f08
   use comm
 !
   implicit none
 !
-  include 'mpif.h'
-!
-  integer :: ist(mpi_status_size,0:3),ireq(0:3)=(/-1,-1,-1,-1/)
+  type(MPI_Status)  :: ist(0:3)
+  type(MPI_Request) :: ireq(0:3)
   integer :: ierr
 !
   call mpi_irecv(p(1,1,1), &
